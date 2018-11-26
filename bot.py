@@ -1,4 +1,5 @@
 import logging
+import argparse
 from math import radians, cos, sin, asin, sqrt
 
 import openaq
@@ -7,7 +8,10 @@ from telegram.ext import CommandHandler, MessageHandler, Filters
 from telegram.ext import Updater
 from functools import wraps
 
-updater = Updater(token='token')
+parser = argparse.ArgumentParser()
+parser.add_argument("token", help="Telegram HTTP API token for your bot.")
+args = parser.parse_args()
+updater = Updater(token=args.token)
 dispatcher = updater.dispatcher
 aq_api = openaq.OpenAQ()
 

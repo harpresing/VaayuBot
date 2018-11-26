@@ -2,9 +2,10 @@ import logging
 from math import radians, cos, sin, asin, sqrt
 
 import openaq
-from telegram import KeyboardButton, ReplyKeyboardMarkup
+from telegram import KeyboardButton, ReplyKeyboardMarkup, ChatAction
 from telegram.ext import CommandHandler, MessageHandler, Filters
 from telegram.ext import Updater
+from functools import wraps
 
 updater = Updater(token='token')
 dispatcher = updater.dispatcher
@@ -13,6 +14,18 @@ aq_api = openaq.OpenAQ()
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s  - %(message)s',
     level=logging.INFO)
+    
+    
+def send_typing_action(func):
+	"""Sends typing action while processing func command."""
+	
+	@wraps(func)
+	def command_func(*args, **kwargs):
+		bot, update = args
+		bot.send_chat_action(chat_id=update.effective_message.chat_id, action=ChatAction.TYPING)
+		return func(bot, update, **kwargs)
+		
+	return command_func
 
 
 def start(bot, update):
@@ -71,7 +84,7 @@ def get_closest_location(latitude, longitude):
             country = r['country']
     return location, city, country
 
-
+@send_typing_action
 def air_quality(bot, update):
     logging.info('Latitude = ' + str(update.message.location.latitude) +
                  ' Longitude = ' + str(update.message.location.longitude))

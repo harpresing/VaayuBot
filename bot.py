@@ -96,6 +96,7 @@ def air_quality(bot, update):
                                 update.message.location.longitude)
     logging.info(msg='Sending air_quality message to chat_ id ' + str(
         update.message.chat_id))
+	print('Lassan kha lo')
     update.message.reply_text(get_air_quality(location, city, country))
 
 
